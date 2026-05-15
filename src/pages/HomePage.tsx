@@ -13,7 +13,7 @@ const PICKUP_LOCATIONS = [
   { id: 'oran', label: '🏪 Oran Port - Near Ferry Terminal', city: 'Oran' },
 ];
 
-export function HomePage({ onCheckout }: HomePageProps) {
+export function HomePage({}: HomePageProps) {
   const { t } = useLang();
 
   const scrollToProducts = () => {
