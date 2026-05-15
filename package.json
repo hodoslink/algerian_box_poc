@@ -1,50 +1,34 @@
 {
   "name": "algerian-box-mvp",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
-    "dev:client": "vite",
-    "dev:server": "cd server && npm run dev",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.app.json"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^6.3.0",
     "@stripe/stripe-js": "^9.5.0",
     "@supabase/supabase-js": "^2.57.4",
-    "axios": "^1.16.1",
     "lucide-react": "^0.344.0",
+    "next": "14.2.21",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "stripe": "^22.1.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.9.1",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/node": "^25.8.0",
+    "@types/node": "^20.12.12",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.18",
-    "concurrently": "^9.2.1",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "eslint": "^9.9.1",
-    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
-    "eslint-plugin-react-refresh": "^0.4.11",
-    "express": "^5.2.1",
-    "globals": "^15.9.0",
-    "nodemon": "^3.1.14",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.21",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.3.0",
-    "vite": "^5.4.2"
+    "typescript": "^5.4.5"
   }
 }
