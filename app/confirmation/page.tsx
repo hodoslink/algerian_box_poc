@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useCart } from '../../components/CartProvider';
+import { useCart } from '@/app/components/CartProvider';
 
 const ConfirmationPage = () => {
   const { clearCart } = useCart();
