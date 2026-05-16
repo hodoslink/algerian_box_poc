@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
 import { Cart, CartItem } from '@/app/types';
-import { supabase } from '@/app/lib/supabaseClient';
+import { createSupabaseClient } from '@/app/lib/supabaseClient';
 import { getUserId } from '@/app/utils/userUtils';
 
 interface CartContextType {
@@ -68,6 +68,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userId = getUserId();
     if (userId && typeof window !== 'undefined') {
       try {
+        const supabase = createSupabaseClient();
+        if (!supabase) return;
+
         const { data, error } = await supabase
           .from('carts')
           .select('items')
@@ -95,6 +98,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userId = getUserId();
     if (userId && typeof window !== 'undefined') {
       try {
+        const supabase = createSupabaseClient();
+        if (!supabase) return;
+
         await supabase
           .from('carts')
           .upsert({ user_id: userId, items: newCart.items }, { onConflict: 'user_id' });

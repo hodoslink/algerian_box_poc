@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import ProductCard from './components/ProductCard';
 import { Product } from './types';
-import { supabase } from './lib/supabaseClient';
+import { createSupabaseClient } from './lib/supabaseClient';
 
 const HomePage = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -13,6 +13,11 @@ const HomePage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        const supabase = createSupabaseClient();
+        if (!supabase) {
+          throw new Error('Supabase client not initialized');
+        }
+
         const { data, error } = await supabase
           .from('products')
           .select('*')
