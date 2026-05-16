@@ -17,7 +17,7 @@ const CartPage = () => {
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold mb-4">Items in your cart</h2>
               <div className="space-y-4">
-                {cart.items.map((item) => (
+                {cart.items.map((item: any) => (
                   <div key={item.id} className="flex items-center border-b pb-4 last:border-0 last:pb-0">
                     {item.image_url && (
                       <div className="w-16 h-16 mr-4 relative flex-shrink-0">
