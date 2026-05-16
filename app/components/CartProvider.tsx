@@ -1,78 +1,72 @@
 'use client';
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-interface Product { id: string; name: string; price: number; image_url?: string; description?: string; }
-interface CartItem extends Product { quantity: number; }
+// Types simples
+type Product = { id: string; name: string; price: number; image_url?: string; description?: string };
+type CartItem = Product & { quantity: number };
 
-interface CartContextType { 
-  cart: CartItem[]; 
-  addToCart: (product: Product) => void; 
-  removeFromCart: (productId: string) => void; 
-  updateQuantity: (productId: string, quantity: number) => void; 
-  clearCart: () => void; 
-  cartCount: number; 
-}
-
-const CartContext = createContext<CartContextType | null>(null);
+// Contexte
+const CartContext = createContext<any>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [mounted, setMounted] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
-  // Charger le panier au montage
+  // 1. Charger au montage (côté client uniquement)
   useEffect(() => {
-    setMounted(true);
     try {
       const stored = localStorage.getItem('cart');
       if (stored) setCart(JSON.parse(stored));
     } catch (e) {
-      console.error('Failed to load cart', e);
+      console.error('Erreur lecture panier:', e);
     }
+    setIsReady(true);
   }, []);
 
-  // Sauvegarder à chaque changement
+  // 2. Sauvegarder à chaque changement
   useEffect(() => {
-    if (mounted) {
+    if (isReady) {
       localStorage.setItem('cart', JSON.stringify(cart));
+      console.log('Panier sauvegardé:', cart);
     }
-  }, [cart, mounted]);
+  }, [cart, isReady]);
 
-  const addToCart = useCallback((product: Product) => {
-    setCart(prev => {
-      const exists = prev.find(p => p.id === product.id);
-      if (exists) {
-        return prev.map(p => p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p);
+  // 3. Fonction d'ajout avec LOG de débogage
+  const addToCart = (product: Product) => {
+    console.log('🛒 TENTATIVE D AJOUT:', product.name);
+    setCart((prev) => {
+      const existing = prev.find((item) => item.id === product.id);
+      let newCart;
+      if (existing) {
+        newCart = prev.map((item) =>
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      } else {
+        newCart = [...prev, { ...product, quantity: 1 }];
       }
-      return [...prev, { ...product, quantity: 1 }];
+      console.log('✅ NOUVEAU PANIER:', newCart);
+      return newCart;
     });
-  }, []);
+  };
 
-  const removeFromCart = useCallback((id: string) => {
-    setCart(prev => prev.filter(p => p.id !== id));
-  }, []);
+  const removeFromCart = (id: string) => {
+    setCart((prev) => prev.filter((item) => item.id !== id));
+  };
 
-  const updateQuantity = useCallback((id: string, qty: number) => {
+  const updateQuantity = (id: string, qty: number) => {
     if (qty < 1) {
       removeFromCart(id);
-      return;
+    } else {
+      setCart((prev) => prev.map((item) => (item.id === id ? { ...item, quantity: qty } : item)));
     }
-    setCart(prev => prev.map(p => p.id === id ? { ...p, quantity: qty } : p));
-  }, [removeFromCart]);
+  };
 
-  const clearCart = useCallback(() => setCart([]), []);
+  const clearCart = () => setCart([]);
 
-  // Ne rien rendre tant que non monté pour éviter la mismatch SSR/Client
-  if (!mounted) return null;
+  if (!isReady) return null; // Évite le mismatch SSR/Client
 
   return (
-    <CartContext.Provider value={{ 
-      cart, 
-      addToCart, 
-      removeFromCart, 
-      updateQuantity, 
-      clearCart, 
-      cartCount: cart.reduce((acc, item) => acc + item.quantity, 0) 
-    }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart }}>
       {children}
     </CartContext.Provider>
   );
@@ -80,6 +74,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
 export function useCart() {
   const context = useContext(CartContext);
-  if (!context) throw new Error('useCart must be used within a CartProvider');
+  if (!context) throw new Error('useCart doit être utilisé dans CartProvider');
   return context;
 }
